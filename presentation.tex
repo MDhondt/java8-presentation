@@ -163,11 +163,12 @@
 \usebackgroundtemplate{\includegraphics[width=\paperwidth]{badges}}
 \begin{frame}
 	\frametitle{Wie ben ik?}
-	\begin{itemize}\setlength\itemsep{5mm}
+	\begin{itemize}
 		\item Master in de ingenieurswetenschappen: computerwetenschappen (KUL)
 		\begin{itemize}
 			\item Computationele informatica
 		\end{itemize}
+		\item Master in Management (KUL)
 		\item Software engineer @ Realdolmen sinds 2015
 		\item Projecten: 
 		\begin{itemize}
@@ -399,16 +400,53 @@ public class Main {
 \end{frame}
 
 \begin{frame}[fragile]
-	\frametitle{Lambda expressies}
+	\frametitle{Lambda expressies: syntax}
 	Argumenten lijst:
 	\begin{itemize}
-		\item Bij slechts 1 argument
+		\item Kan 0, 1 of meer argumenten zijn,
+		\item Types kunnen expliciet gedeclareerd of afgeleid worden,
+		\item Argumenten worden tussen haakjes gescheiden door komma's,
+		\item Lege haakjes worden gebruikt voor een lege argumenten lijst,
+		\item Bij 1 argument met een afgeleid type, zijn haakjes niet nodig.
 	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Lambda expressies: syntax}
+	Body:
+	\begin{itemize}
+		\item Kan 0, 1 of meer statements bevatten,
+		\item Bij 1 statement kunnen accolades en \texttt{return} keywoord weggelaten worden,
+		\item Bij meerdere statements moeten die tussen accolades geplaatst worden en is een \texttt{return} statement verplicht wanneer er iets moet gereturned worden.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Lambda expressies: syntax}
+	Voorbeelden:
+	\begin{lstlisting}
+n -> n %\%% 2 != 0;
+
+(char c) -> c == 'y';
+
+(x, y) -> x + y;
+
+(int a, int b) -> a * a + b * b;
+
+() -> 42
+
+() -> { return 3.14 };
+
+(String s) -> { System.out.println(s); };
+
+() -> { System.out.println("Hello World!"); };
+	\end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]
 	\frametitle{Lambda expressies}
 	\begin{lstlisting}
+$$@FunctionalInterface
 public interface LambdaInterface {
   String doStuff(Integer x, String y);
 }
@@ -420,33 +458,540 @@ public class Main {
       @Override
       public String doStuff(Integer x, String y) {
         return "x=" + x + ",y=" + y;
-      }
-    };
+    }};
 
     LambdaInterface lambdaImpl = (x, y) -> "x=" + x + ",y=" + y;
 
     System.out.println(anonymousImpl.doStuff(5, "Abc"));
     System.out.println(lambdaImpl.doStuff(5, "Abc"));
-  }
+}}
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Method references}
+	
+	Method references zijn gelinkt aan lambda expressies:
+	\begin{itemize}
+		\item Wordt gebruikt om bestaande methode definities te hergebruiken
+		\item Wordt doorgegeven op dezelfde manier als lambda expressies
+	\end{itemize}
+	\begin{lstlisting}
+Object::methodName
+	\end{lstlisting}
+	\begin{itemize}
+		\item Het object of de klasse die een methode bevat wordt voor de dubbele dubbelpunt geplaatst.
+		\item De naam van de methode komt erna. Zonder argumenten.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Method references}
+	
+	\begin{itemize}
+		\item Referentie naar een static method
+		\begin{itemize}
+			\item [$\lambda$] \texttt{(args) -> ClassName.staticMethodName(args)}
+			\item [MR] \texttt{ClassName::staticMethodName}
+		\end{itemize}
+		\item Referentie naar instantie methode van een bestaand object
+		\begin{itemize}
+			\item [$\lambda$] \texttt{(args) -> object.instanceMethodName(args)}
+			\item [MR] \texttt{object::instanceMethodName}
+		\end{itemize}
+		\item Referentie naar instantie methode van een arbitrair object
+		\begin{itemize}
+			\item [$\lambda$] \texttt{(arg0,rest) -> arg0.instanceMethodName(rest)}
+			\item [MR] \texttt{ClassName::instanceMethodName}
+		\end{itemize}
+		\item Referentie naar een constructor
+		\begin{itemize}
+			\item [$\lambda$] \texttt{(args) -> new ClassName(args)}
+			\item [MR] \texttt{ClassName::new}
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Lambda expressies}
+	
+	\begin{itemize}
+		\item Lambda expressies en vooral method references hebben wat oefening nodig alvorens er vlug meer overweg te kunnen.
+		\item Java 8 introduceert een nieuwe \texttt{package} \texttt{java.util.function} met 43 functionele interfaces waarvan een aantal een belangrijk deel uitmaken van uw dagdagelijkse code.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{\texttt{java.util.function}}
+	
+	4 categorieën:
+	\begin{itemize}
+		\item \texttt{Supplier}
+		\item \texttt{Consumer}
+		\begin{itemize}
+			\item \texttt{BiConsumer}
+		\end{itemize}
+		\item \texttt{Predicate}
+		\begin{itemize}
+			\item \texttt{BiPredicate}
+		\end{itemize}
+		\item \texttt{Function}
+		\begin{itemize}
+			\item \texttt{BiFunction}
+			\item \texttt{UnaryOperator}
+			\item \texttt{BinaryOperator}
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Suppliers}
+	
+	\begin{itemize}
+		\item Een \texttt{Supplier} neemt geen argumenten
+		\item Een \texttt{Supplier} levert een waarde (via zijn \texttt{get()} methode)
+	\end{itemize}
+	
+	\begin{lstlisting}
+static void display(Supplier<Integer> suppl) {
+		System.out.println(suppl.get());
 }
 	\end{lstlisting}
+	\begin{lstlisting}
+display(() -> 10);
+display(() -> 100);
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Consumers}
+	
+	\begin{itemize}
+		\item Een \texttt{Consumer} neemt argumenten
+		\item Een \texttt{Consumer} returned \texttt{void} (via zijn \texttt{accept()} methode)
+	\end{itemize}
+	
+	\begin{lstlisting}
+static void display(int value) {
+		switch (value) {
+				case 1:  System.out.println("Value is 1");
+								 return;
+				default: System.out.println("Value != 1");
+								 return;
+		}
+}
+	\end{lstlisting}
+	\begin{lstlisting}
+Consumer<Integer> consumer = x -> display(x - 1);
+consumer.accept(2);
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Predicates}
+	
+	\begin{itemize}
+		\item Een \texttt{Predicate} neemt argumenten en returned een boolean
+	\end{itemize}
+	\begin{lstlisting}
+public interface Collection<E> extends Iterable<E> {
+    default boolean removeIf(Predicate<? super E> filter) {
+        Objects.requireNonNull(filter);
+        boolean removed = false;
+        final Iterator<E> each = iterator();
+        while (each.hasNext()) {
+            if (filter.test(each.next())) {
+                each.remove();
+                removed = true;
+        }}
+        return removed;
+}}
+	\end{lstlisting}
+	\begin{lstlisting}
+List<String> animals = Arrays.asList("cat", "dog", "cheetah", "deer");
+
+animals.removeIf(element -> element.startsWith("c"));
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Java Functional Interface Naming Guide by Esko Luontola}
+	\includegraphics[width=.83\paperwidth]{fi-guide}
 \end{frame}
 
 \subsection{Streams}
 
+\begin{frame}
+	\frametitle{Streams}
+	Wat is een \texttt{Stream}? --- een object
+	\begin{itemize}
+		\item waarop operaties mogelijk zijn,
+		\item dat geen data bijhoudt (in tegenstelling to \texttt{Collection})
+		\item dat de data waarop het werkt niet veranderd
+		\item dat enorme hoeveelheden data kan verwerken in 1 statement
+		\item dat algoritmisch geöptimaliseerd is om data in parallel te verwerken.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Streams}
+	Waarin verschillen Streams van Collections?
+	\begin{itemize}
+		\item Collections houden zich bezig met het efficiënte management en toegang tot data.
+		\item Streams bieden geen rechtstreekse functionaliteit om data aan te passen, maar zijn gemaakt om op een declaratieve manier operaties op de data te omschrijven.
+		\item Streams zijn:
+		\begin{itemize}
+			\item geen opslag of datastructuur
+			\item functioneel by design (een resultaat produceren zonder de bron data aan te passen)
+			\item Lazy
+			\item Optioneel gebonden
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Streams}
+	Hoe bekom ik zo'n Stream?
+	\begin{itemize}
+		\item \texttt{java.util.Collection} heeft 2 nieuwe default methoden
+		\begin{itemize}
+			\item \texttt{default Stream<E> stream()}
+			\item \texttt{default Stream<E> parallelStream()}
+		\end{itemize}
+		\item \texttt{java.util.stream.Stream} heeft enkele static methoden
+		\begin{itemize}
+			\item \texttt{public static<T> Stream<T> of(T... values)}
+			\item \texttt{public static<T> Stream<T> iterate(final T seed, final UnaryOperator<T> f)}
+			\item \texttt{public static<T> Stream<T> generate(Supplier<T> s)}
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Stream non-terminal operaties}
+	\begin{itemize}
+		\item \texttt{Stream<T> filter(Predicate<T> predicate);}
+		\item \texttt{Stream<R> map(Function<T, R> mapper);}
+		\item \texttt{Stream<R> flatMap(Function<T, Stream<R>> mapper);}
+		\item \texttt{Stream<T> distinct();}
+		\item \texttt{Stream<T> peek(Consumer<T> action);}
+		\item \texttt{Stream<T> limit(long maxSize);}
+		\item \texttt{Stream<T> skip(long n);}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Stream terminal operaties}
+	\begin{itemize}
+		\item \texttt{void forEach(Consumer<T> action);}
+		\item \texttt{T reduce(T iden, BinaryOperator<T> accumulator);}
+		\item \texttt{R collect(Collector<T, A, R> collector);}
+		\item \texttt{Optional<T> min(Comparator<T> comparator);}
+		\item \texttt{Optional<T> max(Comparator<T> comparator);}
+		\item \texttt{long count();}
+		\item \texttt{boolean anyMatch(Predicate<T> predicate);}
+		\item \texttt{boolean allMatch(Predicate<T> predicate);}
+		\item \texttt{boolean noneMatch(Predicate<T> predicate);}
+		\item \texttt{Optional<T> findFirst();}
+		\item \texttt{Optional<T> findAny();}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Stream voorbeelden}
+	Als in de volgende voorbeelden de klasse \texttt{Person} gebruikt wordt, dan hebben we het over:
+	\begin{lstlisting}
+public class Person {
+	
+	private String name;
+	private Integer age;
+	private String country;
+	private Map<Person, String> relationshipsByPerson;
+	
+	public String getName() { return name; }
+	public Integer getAge() { return age; }
+	public String getCountry() { return country; }
+	public Map<Person, String> getConnections() { 
+	  return relationshipsByPerson;
+	}
+}
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Stream voorbeelden}
+	Hebben we gegevens van volwassen mensen uit België?
+	\begin{lstlisting}
+public static boolean hasBelgianAdults(Collection<Person> people) {
+  return people.stream()
+               .filter(person -> person.getAge() >= 18)
+               .filter(person -> person.getCountry().equals("Belgium"))
+               .collect(Collectors.toList())
+               .size() > 0;
+}
+	\end{lstlisting}
+	\begin{lstlisting}
+return people.stream()
+             .filter(person -> person.getAge() >= 18)
+             .filter(person -> person.getCountry().equals("Belgium"))
+             .count() > 0;
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Stream voorbeelden}
+	Hebben we gegevens van volwassen mensen uit België?
+	\begin{lstlisting}
+return people.stream()
+             .filter(person -> person.getAge() >= 18)
+             .anyMatch(person -> person.getCountry().equals("Belgium"));
+	\end{lstlisting}
+	\begin{lstlisting}
+return people.stream()
+             .filter(Objects::nonNull)
+             .filter(person -> person.getAge() >= 18)
+             .map(Person::getCountry)
+             .anyMatch("Belgium"::equalsIgnoreCase);
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Stream voorbeelden}
+	Vind alle personen die een dochter zijn:
+	\begin{lstlisting}
+public Collection<Person> getDaughters(Collection<Person> people) {
+    return people.stream()
+                 .filter(Objects::nonNull)
+                 .map(Person::getConnections)
+                 .map(Map::entrySet)
+                 .flatMap(Set::stream)
+                 .filter(entry -> entry.getValue().equals("daughter"))
+                 .map(Map.Entry::getKey)
+                 .distinct()
+                 .sorted(Comparator.comparing(Person::getName))
+                 .collect(Collectors.toList());
+}
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Stream voorbeelden}
+	Een lijst van Strings die gesplitst moeten worden als ze een komma bevatten en het resultaat moet als Map gereturned worden:
+	\begin{lstlisting}
+public class Main {
+    public static void main(String[] args) {
+        System.out.println(splitToMap(Arrays.asList("11,21", "12,21",   "13,23", "13,24", null, "14", "abc", "1,2,3", "12, 13")));
+    }
+}
+	\end{lstlisting}
+	\begin{lstlisting}
+{11=21, 12=21, 13=23}
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Stream voorbeelden}
+	\begin{lstlisting}
+public static Map<Long, Long> splitToMap(List<String> stringsList) {
+  %\only<1->{%return stringsList.stream()%}%
+                    %\only<2->{%.filter(Objects::nonNull)%}%
+                    %\only<3->{%.map(line -> line.split(","))%}%
+                    %\only<4->{%.filter(array -> array.length == 2)%}%
+                    %\only<5->{%.filter(array -> \{\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+                      try \{\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+                        Long.parseLong(array[0]);\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+                        Long.parseLong(array[1]);\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+                        return true;\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+                      \} catch (NumberFormatException nfe) \{\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+                        return false;\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+                      \}\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+                    \})%}%
+                    %\only<6->{%.collect(Collectors.toMap(\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+										        array -> Long.valueOf(array[0]),\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+														array -> Long.valueOf(array[1]),\\\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+														(first, second) -> first));%}%
+}
+	\end{lstlisting}
+\end{frame}
+
 \subsection{Java Date / Time API}
+
+\begin{frame}
+	\frametitle{Java Date / Time API}
+	
+	De datum en tijd klassen voor Java 8 waren behoorlijk verwarrend:
+	\begin{itemize}
+		\item Er is \texttt{java.util.Date} die zowel datum als tijd bijhoudt
+		\item Er is \texttt{java.sql.Date} die overerft van \texttt{java.util.Date} maar enkel de datum representeert
+	\end{itemize}
+	De Date klassen zijn mutable:
+	\begin{itemize}
+		\item Laat toe dat deze via reference worden aangepast
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Java Date / Time API}
+	
+	\begin{lstlisting}
+public class SensitiveData {
+    private Date creationDate;
+		public Date getCreationDate() {
+		    return creationDate;
+		}
+}
+	\end{lstlisting}
+	\begin{lstlisting}
+sensitiveData.getCreationDate().setTime(new Date().getTime());
+	\end{lstlisting}
+	\begin{lstlisting}
+public class SensitiveData {
+    private Date creationDate;
+		public Date getCreationDate() {
+		    return new Date(creationDate);
+		}
+}
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Java Date / Time API}
+	
+	Java 8 introduceert nieuwe klassen die wel immutable zijn:
+	\begin{itemize}
+		\item Instant
+		\begin{itemize}
+			\item Instant 0 is 1 januari 1970 om middernacht GMT
+			\item precisie is in nanoseconden
+		\end{itemize}
+		\item Duration
+		\begin{itemize}
+			\item Tijdspanne tussen twee Instants
+			\item Handig voor uren, minuten en seconden
+			\begin{lstlisting}
+Instant now = Instant.now();
+Instant newYear = Instant.parse("2019-01-01T00:00:00Z");
+Duration between = Duration.between(now, newYear);
+System.out.println(between.getSeconds() + " seconds to go!");
+			\end{lstlisting}
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Java Date / Time API}
+	
+	Java 8 introduceert nieuwe klassen die wel immutable zijn:
+	\begin{itemize}
+		\item Period
+		\begin{itemize}
+			\item Ook een tijdspanne, maar tussen twee datums in plaats van Instants
+			\item Handig voor dagen, weken, maanden en jaren
+		\end{itemize}
+	\end{itemize}
+			\begin{lstlisting}
+LocalDate mozartBirthDate = LocalDate.of(1756, Month.JANUARY, 27);
+LocalDate today = LocalDate.now();
+Period yearsAgo = Period.between(mozartBirthDate, today);
+System.out.println("Mozart was born " + yearsAgo.get(ChronoUnit.YEARS) + " years ago");
+			\end{lstlisting}
+	\begin{itemize}
+		\item ChronoUnit
+		\item LocalDate
+		\item LocalTime
+		\item LocalDateTime
+	\end{itemize}
+\end{frame}
 
 \subsection{Overige vernieuwingen}
 
 \subsubsection{Optional}
 
+\begin{frame}[fragile]
+	\frametitle{Optional}
+	
+	\begin{itemize}
+		\item Nieuwe wrapper klasse die ofwel een waarde bevat of leeg is.
+		\item Beschermt tegen \texttt{NullPointerExceptions}:
+	\end{itemize}
+	\begin{lstlisting}
+getEventWithId(10).getLocation().getCity();
+	\end{lstlisting}
+	\begin{lstlisting}
+public String getCityForEvent(int id) {
+  Event event = getEventWithId(id);
+	if(event != null) {
+	  Location location = event.getLocation();
+		if(location != null) {
+		  return location.getCity();
+		}
+	}
+	return "NotFound";
+}
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Optional}
+	
+	\begin{lstlisting}
+public String getCityForEvent(int id) {
+    Optional.ofNullable(getEventWithId(id))
+		        .flatMap(Event::getLocation)
+						.map(Location::getCity)
+						.orElse("NotFound");
+}
+	\end{lstlisting}
+\end{frame}
+
 \subsubsection{StringJoiner}
+
+\begin{frame}[fragile]
+	\frametitle{StringJoiner}
+	
+	\begin{lstlisting}
+StringJoiner sj = new StringJoiner(", ");
+sj.add("one", "two", "three");
+String string = sj.toString();
+System.out.println(string);
+	\end{lstlisting}
+	\begin{lstlisting}
+asList("one", "two", "three").stream().collect(joining(", "));
+	\end{lstlisting}
+	\begin{lstlisting}
+String.join(", ", Arrays.asList("one", "two", "three"));
+	\end{lstlisting}
+\end{frame}
 
 \subsubsection{Comparators}
 
+\begin{frame}[fragile]
+	\frametitle{Comparators}
+	
+	\texttt{java.util.Comparator} heeft enkele nieuwe methoden gekregen:
+	\begin{itemize}
+		\item \texttt{static Comparator<T> comparing(Function<T,U>)}
+		\item \texttt{default Comparator<T> thenComparing(Comparator<>)}
+		\item \texttt{static Comparator<T> nullsFirst(Comparator<T>)}
+	\end{itemize}
+	\begin{lstlisting}
+Comparator<Person> compareBasedOnFullName = 
+                   Comparator.comparing(Person::getLastName)
+									           .thenComparing(Person::getFirstName);
+	\end{lstlisting}
+\end{frame}
+
 \subsubsection{JavaFX}
 
-\subsubsection{Allerlei}
+\begin{frame}
+	\frametitle{JavaFX 8}
+	
+	\begin{itemize}
+		\item JavaFX heeft een enorme update gekregen
+		\item De vorige versie was 2.2, versionering volgt nu Java SE
+		\item Is nu onderdeel van Java SE in plaats van apparte dependency
+	\end{itemize}
+\end{frame}
 
 \section{Java 9, 10 \& 11}
 
