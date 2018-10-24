@@ -994,5 +994,102 @@ Comparator<Person> compareBasedOnFullName =
 \end{frame}
 
 \section{Java 9, 10 \& 11}
+	
+\subsection{Java 9}
+
+\begin{frame}
+	\frametitle{Java 9}
+	
+	\begin{itemize}
+		\item Released in september 2017
+		\item Module systeem: voeg de link fase toe tussen compilatie en runtime waarbij modules kunnen samengevoegd worden
+		\item Jshell: command line tool om expressies te evalueren
+		\item SHA-3 hashing in \texttt{java.security.MessageDigest}
+		\item Applet API is nu deprecated
+		\item G1 is nu de default garbage collector
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Java 9}
+	
+	\begin{itemize}
+		\item Factory methods voor initialisatie van Lists, Sets en Maps
+		\begin{itemize}
+			\item Lists
+			\begin{onlyenv}<2>
+				\begin{lstlisting}
+List<String> stringList = Arrays.asList("a", "b", "c");
+stringList = Collections.unmodifiableList(stringList);
+				\end{lstlisting}
+				\begin{lstlisting}
+List stringList = List.of("a", "b", "c");
+				\end{lstlisting}
+			\end{onlyenv}
+			\item Sets
+			\begin{onlyenv}<3>
+				\begin{lstlisting}
+Set<String> set = new HashSet<>(Arrays.asList("a","b","c"));
+set = Collections.unmodifiableSet(set);
+				\end{lstlisting}
+				\begin{lstlisting}
+Set<String> set = Set.of("a", "b", "c");
+				\end{lstlisting}
+			\end{onlyenv}
+			\item Maps
+			\begin{onlyenv}<4>
+				\begin{lstlisting}
+Map<String, Integer> strMap = new HashMap<String, Integer>(); 
+strMap.put("a", 1); 
+strMap.put("b", 2);
+strMap.put("c", 3);
+strMap = Collections.unmodifiableMap(strMap);
+				\end{lstlisting}
+				\begin{lstlisting}
+Map strMap = Map.of("a", 1, "b", 2, "c", 3);
+				\end{lstlisting}
+			\end{onlyenv}
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\subsection{Java 10}
+
+\begin{frame}
+	\frametitle{Java 10}
+	
+	\begin{itemize}
+		\item Released in maart 2018
+		\item \texttt{Optional} heeft nu een \texttt{orElseThrow()} methode
+		\item Meer mogelijkheden om unmodifiable collections te creëren:
+		\begin{itemize}
+			\item \texttt{List.copyOf}, \texttt{Set.copyOf}, en \texttt{Map.copyOf}
+			\item \texttt{toUnmodifiableList}, \texttt{toUnmodifiableSet}, en \texttt{toUnmodifiableMap} zijn nieuwe Stream collectors
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\subsection{Java 11}
+
+\begin{frame}
+	\frametitle{Java 11}
+	
+	\begin{itemize}
+		\item Released in september 2018
+		\item Unicode 10 support
+		\item \texttt{Collection.toArray(IntFunction)}
+		\item Z garbage collector (experimenteel)
+		\item Epsilon garbage collector (experimenteel)
+		\item Crypto
+		\begin{itemize}
+			\item Key agreement voor Curve25519 en Curve448
+			\item ChaCha20 en Poly1305 algoritmen
+			\item AES encryptie met HMAC-SHA2 
+		\end{itemize}
+		\item TLS 1.3 support
+		\item \texttt{com.sun.awt.AWTUtilities}, Lucida Fonts, appletviewer launcher verwijderd
+		\item JavaFX verwijderd
+	\end{itemize}
+\end{frame}
 
 \end{document}
